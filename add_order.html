@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Order</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        // Function to update the total price dynamically
+        function updatePrice(row) {
+            const select = row.querySelector("select");
+            const quantityInput = row.querySelector("input[name='quantity']");
+            const priceSpan = row.querySelector(".price");
+
+            const price = parseFloat(select.options[select.selectedIndex].dataset.price || 0);
+            const quantity = parseInt(quantityInput.value || 0);
+
+            priceSpan.textContent = `$${(price * quantity).toFixed(2)}`;
+            calculateTotal();
+        }
+
+        // Function to calculate the total price for the order
+        function calculateTotal() {
+            const rows = document.querySelectorAll(".item-row");
+            let total = 0;
+
+            rows.forEach(row => {
+                const select = row.querySelector("select");
+                const quantityInput = row.querySelector("input[name='quantity']");
+
+                const price = parseFloat(select.options[select.selectedIndex].dataset.price || 0);
+                const quantity = parseInt(quantityInput.value || 0);
+
+                total += price * quantity;
+            });
+
+            document.getElementById("total-price").textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Function to dynamically add item rows to the form
+        function addItemRow() {
+            const itemRow = document.createElement('div');
+            itemRow.classList.add('item-row');
+            itemRow.innerHTML = `
+                <label>Item:</label>
+                <select name="item_name" onchange="updatePrice(this.parentElement)" required>
+                    {% for item in menu_items %}
+                        <option value="{{ item[0] }}" data-price="{{ item[1] }}">{{ item[0] }} (${{ item[1] }}) - Stock: {{ item[2] }}</option>
+                    {% endfor %}
+                </select>
+                <label>Quantity:</label>
+                <input type="number" name="quantity" min="1" value="1" onchange="updatePrice(this.parentElement)" required>
+                <span class="price">$0.00</span>
+                <button type="button" onclick="this.parentElement.remove(); calculateTotal();">Remove</button>
+            `;
+            document.getElementById('item-list').appendChild(itemRow);
+            calculateTotal();
+        }
+    </script>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Add Order</h2>
+        <form method="POST">
+            <label>Table ID:</label>
+            <input type="number" name="table_id" placeholder="Enter Table ID" required>
+
+            <h3>Order Items</h3>
+            <div id="item-list">
+                <div class="item-row">
+                    <label>Item:</label>
+                    <select name="item_name" onchange="updatePrice(this.parentElement)" required>
+                        {% for item in menu_items %}
+                            <option value="{{ item[0] }}" data-price="{{ item[1] }}">{{ item[0] }} (${{ item[1] }}) - Stock: {{ item[2] }}</option>
+                        {% endfor %}
+                    </select>
+                    <label>Quantity:</label>
+                    <input type="number" name="quantity" min="1" value="1" onchange="updatePrice(this.parentElement)" required>
+                    <span class="price">$0.00</span>
+                </div>
+            </div>
+            <button type="button" onclick="addItemRow()">Add Item</button>
+            <h3>Total: <span id="total-price">$0.00</span></h3>
+            <button type="submit">Submit Order</button>
+        </form>
+        <a href="{{ url_for('dashboard') }}" class="button">Back to Dashboard</a>
+    </div>
+</body>
+</html>

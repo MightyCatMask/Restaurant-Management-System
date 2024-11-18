@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Linking CSS File -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Main Dashboard Container -->
+    <div class="dashboard-container">
+        <div class="welcome-message">
+            <h2>Welcome, Admin!</h2>
+            <!-- Dashboard Links -->
+            <div class="dashboard-links">
+                <a href="{{ url_for('add_order') }}">Add Order</a>
+                <a href="{{ url_for('view_orders', status='in_progress') }}">View In-Progress Orders</a>
+                <a href="{{ url_for('view_orders', status='completed') }}">View Completed Orders</a>
+                <a href="{{ url_for('update_inventory') }}">Manage Inventory</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

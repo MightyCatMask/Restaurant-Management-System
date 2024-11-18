@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View {{ status | capitalize }} Orders</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>{{ status | capitalize }} Orders</h2>
+
+        <!-- Display Orders -->
+        {% if orders %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Table ID</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order[0] }}</td> <!-- Order ID -->
+                    <td>{{ order[1] }}</td> <!-- Table ID -->
+                    <td>
+                        {% if order[2] %}
+                            {% set items = order[2] | safe | json.loads %}
+                            <ul>
+                                {% for item in items %}
+                                <li>{{ item.item_name }} - Quantity: {{ item.quantity }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            No items
+                        {% endif %}
+                    </td>
+                    <td>${{ order[3] }}</td> <!-- Total -->
+                    <td>{{ order[4] }}</td> <!-- Status -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="no-data">No orders found.</p>
+        {% endif %}
+
+        <!-- Back to Dashboard -->
+        <div class="flex-container">
+            <a href="{{ url_for('dashboard') }}" class="dashboard-links">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>
